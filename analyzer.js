@@ -43,7 +43,8 @@ function generator(){
 function segmentMaker(){
     //rawmapの辺情報を使いやすくする
     for(const s of rawmap.segment){
-        segment.push({index:[parsename(s.origin),parsename(s.destination)]});
+        const ind=[parsename(s.origin),parsename(s.destination)];
+        segment.push({attributes:s.attributes,index:ind});
     }
 }
 function parsename(name){
@@ -60,8 +61,6 @@ function nexusCenterProjection(){
         v.pos=[1,0];
     }
     //nexus中心の配置により、ある程度効率的に配置できると思って。
-    //TODO:もし過剰な辺重複が見られたら手直ししよう
-    //!一部の頂点(人柱 vertex[251])などが消えるバグ発生
     const projected=[];
     const projectedName=["Nexus"];
     vertex[nexusid].pos=[0,0];
@@ -117,4 +116,10 @@ function loadFromStorage(){
 
 }
 function storageWrite(){
+}
+function dijkstra(p,q){
+
+}
+function finder(name){
+
 }

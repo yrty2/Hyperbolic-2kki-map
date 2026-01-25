@@ -1,3 +1,4 @@
+let userAction=0;
 let choice=-1;
 let lookin="";
 let drag=false;
@@ -5,6 +6,7 @@ let timer=0;
 //for control
 let vertexMover=false;
 canvas.addEventListener("mousemove",e=>{
+    userAction=0;
     timer++;
     const v=[(2*e.offsetX-canvas.width)/canvas.height,(2*e.offsetY-canvas.height)/canvas.height];
     if(vectorlength(v)<1){
@@ -33,7 +35,8 @@ canvas.addEventListener("mousemove",e=>{
     }
 });
 canvas.addEventListener("mouseup",e=>{
-    if(timer<10){
+    userAction=0;
+    if(timer<4){
 const choosen=vertex.findIndex(e=>geo.distance(projected(e.pos),cursor)<0.1);
             if(choosen==choice){
                 choice=-1;
@@ -46,14 +49,18 @@ const choosen=vertex.findIndex(e=>geo.distance(projected(e.pos),cursor)<0.1);
             }
     }
     drag=false;
+    //render();
+
 });
 canvas.addEventListener("mousedown",e=>{
+    userAction=0;
     timer=0;
     //vertex.push({pos:cursor});
             drag=true;
 });
 const key={};
 window.addEventListener("keydown",e=>{
+    userAction=0;
     switch (e.code){
         case "KeyW":
             key.w=true;
@@ -72,6 +79,7 @@ window.addEventListener("keydown",e=>{
     }
 });
 window.addEventListener("keyup",e=>{
+    userAction=0;
     switch (e.code){
         case "KeyW":
             key.w=false;
@@ -107,4 +115,4 @@ function keyframe(){
         moveVector=[0,0];
     }
 }
-render();
+frame();
