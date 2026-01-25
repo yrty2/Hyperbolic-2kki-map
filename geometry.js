@@ -204,8 +204,8 @@ const projection={
     },
     klein(hyp){
         //ベルトラミ・クラインモデル
-        const abs=c32.abs(hyp)[0];
-        return c32.prod(c32.prod(hyp,2),1/(1+abs*abs));
+        const abs=c128.abs(hyp);
+        return c128.prod(c128.prod(hyp,2),1/(1+abs*abs));
     },
     upperhalf(hyp){
         //上半平面
