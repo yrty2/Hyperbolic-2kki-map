@@ -1,12 +1,56 @@
-let mode=1;//move vertex
+let choice=-1;
+let lookin="";
+let drag=false;
+let timer=0;
+//for control
+let vertexMover=false;
 canvas.addEventListener("mousemove",e=>{
+    timer++;
     const v=[(2*e.offsetX-canvas.width)/canvas.height,(2*e.offsetY-canvas.height)/canvas.height];
     if(vectorlength(v)<1){
         cursor=v.slice();
     }
+    if(vertexMover && choice!=-1){
+        //選ばれた頂点、choice
+        const p=vertex[choice];
+        p.pos=cursor;
+    }
+    if(drag){
+        if(vectorlength(cursor)<0.9){
+        const v=[2*e.movementX/canvas.height,2*e.movementY/canvas.height];
+        const p=vectorsub(cursor,v);//p -> cursor
+        const u=geo.translate(vectorneg(cursor),p);
+        //移動角
+        const arg=vectorarg(geo.translate(cursor,vectorneg(p)));
+        let factor=24;
+        if(projid==1){
+            factor=10;
+        }
+        if(geo.length(u)<0.99){
+        moveVector=vectormul(exp(factor*geo.length(u),arg),1/50);
+        }
+        }
+    }
 });
-canvas.addEventListener("click",e=>{
-    vertex.push({pos:cursor});
+canvas.addEventListener("mouseup",e=>{
+    if(timer<10){
+const choosen=vertex.findIndex(e=>geo.distance(projected(e.pos),cursor)<0.1);
+            if(choosen==choice){
+                choice=-1;
+            }else{
+                choice=choosen;
+            }
+            if(choice!=-1 && lookin!=vertex[choice].name){
+                ifm.src=`https://wikiwiki.jp/yume2kki-t/${vertex[choice].name}`;
+                lookin=vertex[choice].name;
+            }
+    }
+    drag=false;
+});
+canvas.addEventListener("mousedown",e=>{
+    timer=0;
+    //vertex.push({pos:cursor});
+            drag=true;
 });
 const key={};
 window.addEventListener("keydown",e=>{
@@ -23,6 +67,8 @@ window.addEventListener("keydown",e=>{
         case "KeyD":
             key.d=true;
             break;
+        case "KeyP":
+            projid=(projid+1)%(projname.length);
     }
 });
 window.addEventListener("keyup",e=>{

@@ -13,7 +13,7 @@ async function initialize(){
         const theta=2*Math.PI*Math.random();
         const maxdist=10;
         const randpos=vectormul([Math.cos(theta),Math.sin(theta)],Math.tanh(maxdist*((vertex.length+100)/rawmap.vertex.length)));
-        vertex.push({title:v.title,name:v.originalName,pos:randpos,neighbors:[]});
+        vertex.push({title:v.title,name:v.originalName,pos:randpos,neighbors:[],connect:[],image:v.locationImage});
     }
     nexusid=parsename("Nexus");
     for(const p of parsedJSON.connections){
@@ -23,6 +23,8 @@ async function initialize(){
             const uid=parsename(q.destination);
             const vid=parsename(q.origin);
             if(uid!=-1 && vid!=-1){
+                vertex[vid].connect.push(uid);
+                vertex[uid].connect.push(vid);
                 vertex[vid].neighbors.push(uid);
             }
             if(isdup){
@@ -59,6 +61,7 @@ function nexusCenterProjection(){
     }
     //nexus中心の配置により、ある程度効率的に配置できると思って。
     //TODO:もし過剰な辺重複が見られたら手直ししよう
+    //!一部の頂点(人柱 vertex[251])などが消えるバグ発生
     const projected=[];
     const projectedName=["Nexus"];
     vertex[nexusid].pos=[0,0];
@@ -79,12 +82,17 @@ function nexusCenterProjection(){
                 projectedName.push(vertex[branch[0].neighbors[k]].title);
                 stk.push(vertex[branch[0].neighbors[k]]);
             }
-            console.log(stk);
         }else{
             for(const b of branch){
                 for(let k=0; k<b.neighbors.length; ++k){
                     if(projectedName.indexOf(vertex[b.neighbors[k]].title)==-1){
-                    vertex[b.neighbors[k]].pos=geo.translate(exp(0.6,(2*k-(b.neighbors.length-1))*bunsan/(b.neighbors.length-1)+b.arg),b.pos);
+                    vertex[b.neighbors[k]].pos=geo.translate(exp(Math.random()*0.3+0.4,(2*k-(b.neighbors.length-1))*bunsan/(Math.max(b.neighbors.length-1,1))+b.arg),b.pos);
+                    //位置重複を避けようとする
+                    let dup=vertex.findIndex(e=>geo.distance(e.pos,vertex[b.neighbors[k]].pos)<0.3 && e.name!=vertex[b.neighbors[k]].name);
+                    while(dup!=-1){
+                        vertex[b.neighbors[k]].pos=geo.translate(exp(Math.random()*0.7,Math.random()*2*Math.PI),vertex[b.neighbors[k]].pos);
+                        dup=vertex.findIndex(e=>geo.distance(e.pos,vertex[b.neighbors[k]].pos)<0.3 && e.name!=vertex[b.neighbors[k]].name);
+                    }
                     vertex[b.neighbors[k]].arg=vectorarg(geo.translate(vertex[b.neighbors[k]].pos,vectorneg(b.pos)));
                     const id=vertex[b.neighbors[k]].neighbors.indexOf(parsename(b.title));
                     if(id!=-1){
@@ -106,7 +114,7 @@ function nexusCenterProjection(){
     expand();
 }
 function loadFromStorage(){
-    
+
 }
 function storageWrite(){
 }
