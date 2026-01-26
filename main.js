@@ -70,12 +70,12 @@ function render(){
                 }else{
                     let alpha=1;
                     if(s.index[1]==choice || s.index[0]==choice){
-                        if(s.index[0]==choice){
+                        if(s.index[1]==choice){
                             draw=false;
                         }
                         ctx.strokeStyle=`hsla(120, 100%, 50%, 1)`;
                         if(s.attributes.indexOf("No Return")!=-1){
-                            if(s.index[0]==choice){
+                            if(s.index[1]==choice){
                                 alpha=0.2;
                             }
                             directional=true;
