@@ -1,6 +1,9 @@
 let userAction=0;
 let choice=-1;
+let choiceGroup=[];
+let choiceGroupNames=[];
 let lookin="";
+let cursorout=false;
 let drag=false;
 let timer=0;
 //for control
@@ -14,6 +17,9 @@ function mousemover(e){
     const v=[(2*e.offsetX-canvas.width)/canvas.height,(2*e.offsetY-canvas.height)/canvas.height];
     if(vectorlength(v)<1){
         cursor=v.slice();
+        cursorout=false;
+    }else{
+        cursorout=true;
     }
     if(vertexMover && choice!=-1){
         //選ばれた頂点、choice
@@ -40,9 +46,15 @@ function mousemover(e){
 canvas.addEventListener("pointerup",e=>{
     mouseupper(e);
 });
+canvas.addEventListener("contextmenu",e=>{
+    if(!cursorout){
+        e.preventDefault();
+    }
+});
 function mouseupper(e){
         userAction=0;
     if(timer<4){
+        if(e.button==0){
 const choosen=vertex.findIndex(e=>geo.distance(projected(e.pos),cursor)<0.1);
             if(choosen==choice){
                 choice=-1;
@@ -58,9 +70,34 @@ const choosen=vertex.findIndex(e=>geo.distance(projected(e.pos),cursor)<0.1);
         }else{
             urobtn.disabled=false;
         }
+    }else if(e.button==2){
+        //右クリック
+        const choosen=vertex.findIndex(e=>geo.distance(projected(e.pos),cursor)<0.1);
+        if(choosen!=-1){
+            const id=choiceGroup.indexOf(choosen);
+            if(id==-1){
+            choiceGroup.push(choosen);
+            choiceGroupNames.push(vertex[choosen].name);
+            }else{
+                choiceGroup=deleteIndex(choiceGroup,id);
+                choiceGroupNames=deleteIndex(choiceGroupNames,id);
+            }
+        }
+    }
+    }
+    if(drag){
+        if(geo.length(vertex[nexusid].pos)>8.4){
+            maigo.innerHTML="<input type='button' value='☆めだまばくだん☆' onclick='kyuusai()' />";
+        }else{
+            maigo.innerHTML="";
+        }
     }
     drag=false;
     //render();
+}
+function kyuusai(){
+    maigo.innerHTML="";
+    moveVector=vectorneg(vertex[nexusid].pos);
 }
 function urobutton(){
     //その頂点にうろつきを立たせる。
@@ -98,6 +135,13 @@ window.addEventListener("keydown",e=>{
             break;
         case "KeyP":
             projid=(projid+1)%(projname.length);
+            break;
+        case "KeyH":
+            pathfinding();
+            break;
+        case "KeyR":
+            pathlist=[];
+            break;
     }
 });
 window.addEventListener("keyup",e=>{

@@ -6,11 +6,13 @@ const uro=new Image();
 uro.src="uro.png";
 const ifm=document.querySelector(".ifm");
 const urobtn=document.querySelector(".urobtn");
+const maigo=document.querySelector(".maigo");
 urocheck.src="urocheck.png";
 const urogif=[new Image(),new Image(),new Image(),new Image()];
 for(let k=0; k<4; ++k){
     urogif[k].src=`Urowalk/uw${k}.png`;
 }
+let pathlist=[];//specialPath
 const canvas=document.querySelector(".canvas");
 const ctx=canvas.getContext("2d");
 let moveVector=[0,0];
@@ -42,6 +44,10 @@ function render(){
     ctx.font="12px solid";
     ctx.fillText(`投影:${projname[projid]}`,30,canvas.height-100);
     ctx.fillText(`Pで変更`,30,canvas.height-70);
+    //description
+    ctx.fillText(`右クリックで頂点を選択`,30,canvas.height-230);
+    ctx.fillText(`Hで経路探索(最短経路)`,30,canvas.height-200);
+    ctx.fillText(`Rで経路リストをすべて削除`,30,canvas.height-170);
     ctx.fillStyle="#000000";
     ctx.textAlign="center";
     ctx.textBaseline="middle";
@@ -131,12 +137,32 @@ function render(){
                 }
     }
     }
+    if(choice==-1){
+    let pind=0;
+    for(const p of pathlist){
+        ctx.strokeStyle=`hsl(${pind*60},100%,50%)`;
+        for(let k=0; k<p.length-1; ++k){
+            geodesic(vertex[p[k]].pos,vertex[p[k+1]].pos);
+        }
+        pind++;
+    }
+}
     for(const v of vertex){
         if(choice==-1 || (v.connect.indexOf(choice)!=-1 || v.name==vertex[choice].name)){
         let scl;
         scl=hyperscale(v.pos,0.05);
         ctx.fillStyle="#000000";
+        if(choiceGroupNames.indexOf(v.name)==-1){
         ctx.strokeStyle="#ffffff5f";
+        }else{
+            ctx.strokeStyle="#ff903b";
+        }
+        if(choice==-1){
+        const plind=pathlist.findIndex(e=>e.indexOf(v.index)!=-1);
+        if(plind!=-1){
+            ctx.strokeStyle=`hsl(${plind*60},100%,50%)`;
+        }
+    }
         mapPoint(v.pos,scl);
         ctx.fillStyle="#ffffff";
         hyperText(v.name,v);
@@ -164,8 +190,8 @@ function render(){
 }
 function frame(){
     t+=1/60;
-    if(ifm.height!=window.innerHeight){
-    ifm.width=(window.innerWidth-window.innerHeight)/2-30;
+    if(ifm.height!=window.innerHeight || ifm.width!=window.innerWidth){
+    ifm.width=Math.max(0,(window.innerWidth-window.innerHeight)/2-30);
     ifm.height=window.innerHeight;
     canvas.width=window.innerWidth;
     canvas.height=window.innerHeight;

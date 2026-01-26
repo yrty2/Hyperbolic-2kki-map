@@ -13,7 +13,7 @@ async function initialize(){
         const theta=2*Math.PI*Math.random();
         const maxdist=10;
         const randpos=vectormul([Math.cos(theta),Math.sin(theta)],Math.tanh(maxdist*((vertex.length+100)/rawmap.vertex.length)));
-        vertex.push({title:v.title,name:v.originalName,pos:randpos,neighbors:[],connect:[],image:v.locationImage});
+        vertex.push({title:v.title,name:v.originalName,pos:randpos,neighbors:[],connect:[],image:v.locationImage,cat:[],index:vertex.length});
     }
     nexusid=parsename("Nexus");
     for(const p of parsedJSON.connections){
@@ -24,7 +24,9 @@ async function initialize(){
             const vid=parsename(q.origin);
             if(uid!=-1 && vid!=-1){
                 vertex[vid].connect.push(uid);
+                vertex[vid].cat.push(q.attributes);
                 vertex[uid].connect.push(vid);
+                vertex[uid].cat.push(q.attributes);
                 vertex[vid].neighbors.push(uid);
             }
             q.hide=!isdup;
@@ -117,7 +119,61 @@ function loadFromStorage(){
 function storageWrite(){
 }
 function dijkstra(p,q){
-
+    //ダイクストラ法(最短経路探索アルゴリズム)
+    const heap=[{vertex:p,path:[p],checked:true}];//ある頂点への最短経路と手数
+    //最初の経路探索
+    //すべての辺の重みを1とする。
+    let timeToQ=9999999;
+    for(const s of p.connect){
+        const way={vertex:vertex[s],checked:false,path:[parsename(p.title),s]};
+        const id=heap.findIndex(e=>e.vertex.name==vertex[s].name);
+        if(id==-1){
+            heap.push(way);
+        }
+    }
+    while(true){//あるpathが最短経路であることが確定するまで。
+        let end=true;
+        const stack=[];
+        for(const h of heap){
+            if(!h.checked){
+        //戻る必要はない
+        for(let k=0; k<h.vertex.connect.length; ++k){
+            const s=h.vertex.connect[k];
+            const at=h.vertex.cat[k];
+            //道が到達地でなくNo returnあるいはDead Endであるならやめておく
+            let safe=vertex[s].name==q.name || (at.indexOf("No return")==-1 && at.indexOf("Dead End")==-1);
+            if(h.path.length+1<timeToQ && safe){
+                end=false;
+        const frontier=(h.path.indexOf(s)==-1);
+        if(frontier){
+            const v=vertex[s];
+        const path={vertex:v,path:[...h.path,s],checked:false};
+        if(v.name==q.name && timeToQ>h.path.length+1){
+                timeToQ=h.path.length+1;
+        }
+        const id=heap.findIndex(e=>e.vertex.name==vertex[s].name);
+        if(id==-1){
+            stack.push(path);
+        }else{
+            //以前ここを訪れた。
+            if(heap[id].path.length>path.path.length){
+                //発見した経路のほうが近い
+                heap[id]=path.slice();
+            }
+        }
+        }
+    }
+    }
+    h.checked=true;
+}
+    }
+    heap.push(...stack);
+    if(end){
+        break;
+    }
+    }
+    const id=heap.findIndex(e=>e.vertex.name==q.name);
+    return heap[id];
 }
 function finder(name){
 
@@ -133,4 +189,18 @@ function parseAttributes(){
         }
     }
     return alist;
+}
+function pathfinding(){
+    if(choiceGroup.length>=2){
+    //choiceGroupを順番に pathlistに追加。
+    const res=[];
+    for(let k=0; k<choiceGroup.length-1; ++k){
+        res.push(...dijkstra(vertex[choiceGroup[k]],vertex[choiceGroup[k+1]]).path);
+    }
+    pathlist.push(res);
+    choiceGroup=[];
+    choiceGroupNames=[];
+    }else{
+        alert("頂点数が足りていません！");
+    }
 }
