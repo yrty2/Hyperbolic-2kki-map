@@ -1,8 +1,15 @@
-const projname=["ポアンカレの円盤","クラインの円盤"];
+const projname=["ポアンカレの円盤","クラインの円盤"];//上半平面ほしい
 let projid=0;
 const urocheck=new Image();
+const uro=new Image();
+uro.src="uro.png";
 const ifm=document.querySelector(".ifm");
+const urobtn=document.querySelector(".urobtn");
 urocheck.src="urocheck.png";
+const urogif=[new Image(),new Image(),new Image(),new Image()];
+for(let k=0; k<4; ++k){
+    urogif[k].src=`Urowalk/uw${k}.png`;
+}
 const canvas=document.querySelector(".canvas");
 const ctx=canvas.getContext("2d");
 let moveVector=[0,0];
@@ -11,6 +18,10 @@ let cursor=[0,0];
 const vertex=[];
 const segment=[];
 let t=0;
+const urotsuki={
+    mapid:-1,//disabled
+    anim:0
+}
 function render(){
     userAction++;
     ctx.textAlign="left";
@@ -34,7 +45,8 @@ function render(){
     ctx.textAlign="center";
     ctx.textBaseline="middle";
     for(const s of segment){
-        if(s.index[0]!=-1 && s.index[1]!=-1){
+        if(s.index[0]!=-1 && s.index[1]!=-1 && (choice!=-1 || !s.hide)){
+            let draw=true;
             const p=vertex[s.index[0]].pos;
             const q=vertex[s.index[1]].pos;
             const dist=geo.distance(p,q);
@@ -51,31 +63,52 @@ function render(){
                 hyperText(stack,{pos:m});
                 }
             }
+            let directional=false;
                 if(choice==-1){
                 ctx.strokeStyle=`hsla(0, 0%, 100%, ${Math.max(Math.min(1/dist,1),0.1)})`;
                 mark();
                 }else{
-                    if(s.index.indexOf(choice)!=-1){
+                    let alpha=1;
+                    if(s.index[1]==choice || s.index[0]==choice){
+                        if(s.index[0]==choice){
+                            draw=false;
+                        }
                         ctx.strokeStyle=`hsla(120, 100%, 50%, 1)`;
+                        if(s.attributes.indexOf("No Return")!=-1){
+                            if(s.index[0]==choice){
+                                alpha=0.2;
+                            }
+                            directional=true;
+                            draw=true;
+                        }
                         if(s.attributes.length>0){
-                        ctx.strokeStyle=`rgb(0, 255, 217)`;
+                        ctx.strokeStyle=`rgba(0, 255, 217,${alpha})`;
                         }
                         if(s.attributes.indexOf("Dead End")!=-1){
-                        ctx.strokeStyle=`rgb(137, 0, 0)`;
+                        ctx.strokeStyle=`rgba(137, 0, 0,${alpha})`;
                         }
                         if(s.attributes.indexOf("Needs Effect")!=-1){
-                        ctx.strokeStyle=`rgb(234, 255, 0)`;
+                        ctx.strokeStyle=`rgba(234, 255, 0,${alpha})`;
                         }
-                        if(s.attributes.indexOf("No Return")!=-1){
-                        ctx.strokeStyle=`rgb(255, 149, 0)`;
+                        if(s.attributes.indexOf("No Entry")!=-1){
+                            draw=false;
                         }
                         mark();
                     }else{
+                        if(s.hide){
+                            draw=false;
+                        }
                         ctx.strokeStyle=`hsla(0, 0%, 100%, 0.05)`;
                     }
                 }
                 //!これも重い
-                geodesic(p,q);
+                if(draw){
+                if(directional){
+                    geodesicdot(p,q);
+                }else{
+                    geodesic(p,q);
+                }
+                }
     }
     }
     for(const v of vertex){
@@ -92,6 +125,22 @@ function render(){
             v.pos=geo.translate(v.pos,moveVector);
         }
     }
+    if(urotsuki.mapid!=-1){
+        ctx.imageSmoothingEnabled=false;
+        //うろ
+        const gif=urogif[Math.floor(urotsuki.anim)%4];
+        const pos=fix(vertex[urotsuki.mapid].pos);
+        const a=hyperscale(vertex[urotsuki.mapid].pos,0.2)*10;
+        if(a>0.6){
+            ctx.drawImage(gif,pos[0]-a*gif.width/2,pos[1]-a*gif.height/2-20*a,gif.width*a,gif.height*a);
+        }else{
+            const uropos=vectorsum(exp(1.05*canvas.height/2,vectorarg(vertex[urotsuki.mapid].pos)),[canvas.width/2,canvas.height/2]);
+            const c=2;
+            ctx.drawImage(uro,uropos[0]-c*gif.width/2,uropos[1]-c*gif.height/2,c*gif.width,c*gif.height);
+        }
+        urotsuki.anim+=0.1;
+    }
+    ctx.imageSmoothingEnabled=true;
 }
 function frame(){
     t+=1/60;
@@ -101,7 +150,8 @@ function frame(){
     canvas.width=window.innerWidth;
     canvas.height=window.innerHeight;
     }
-    if(userAction<60){
+    //15秒間操作がなければ停止する(バックグラウンドでCPUを圧迫しないため)
+    if(userAction<15*60){
     render();
     }
     keyframe();
@@ -155,6 +205,16 @@ function geodesic(p,q){
         ctx.lineTo(u[1][0],u[1][1]);
         ctx.stroke();
         ctx.closePath();
+    }
+}
+function geodesicdot(p,q){
+    const d=16;//いくつの点で描かれるか
+    const pq=geo.translate(p,vectorneg(q));
+    const T=vectorlength(pq);
+    for(let k=0; k<d; ++k){
+        const c=geo.translate(vectormul(pq,Math.tanh(math.mod((t/6+k/d),1)*Math.atanh(T))/T),q);
+        ctx.fillStyle=ctx.strokeStyle;
+        point(c,hyperscale(c,0.008));
     }
 }
 function fix(p){

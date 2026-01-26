@@ -27,9 +27,8 @@ async function initialize(){
                 vertex[uid].connect.push(vid);
                 vertex[vid].neighbors.push(uid);
             }
-            if(isdup){
-                rawmap.segment.push(q);
-            }
+            q.hide=!isdup;
+            rawmap.segment.push(q);
         }
     }
     generator();
@@ -44,7 +43,7 @@ function segmentMaker(){
     //rawmapの辺情報を使いやすくする
     for(const s of rawmap.segment){
         const ind=[parsename(s.origin),parsename(s.destination)];
-        segment.push({attributes:s.attributes,index:ind});
+        segment.push({attributes:s.attributes,index:ind,hide:s.hide});
     }
 }
 function parsename(name){

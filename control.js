@@ -5,7 +5,10 @@ let drag=false;
 let timer=0;
 //for control
 let vertexMover=false;
-canvas.addEventListener("mousemove",e=>{
+canvas.addEventListener("pointermove",e=>{
+    mousemover(e);
+});
+function mousemover(e){
     userAction=0;
     timer++;
     const v=[(2*e.offsetX-canvas.width)/canvas.height,(2*e.offsetY-canvas.height)/canvas.height];
@@ -33,9 +36,12 @@ canvas.addEventListener("mousemove",e=>{
         }
         }
     }
+}
+canvas.addEventListener("pointerup",e=>{
+    mouseupper(e);
 });
-canvas.addEventListener("mouseup",e=>{
-    userAction=0;
+function mouseupper(e){
+        userAction=0;
     if(timer<4){
 const choosen=vertex.findIndex(e=>geo.distance(projected(e.pos),cursor)<0.1);
             if(choosen==choice){
@@ -47,17 +53,33 @@ const choosen=vertex.findIndex(e=>geo.distance(projected(e.pos),cursor)<0.1);
                 ifm.src=`https://wikiwiki.jp/yume2kki-t/${vertex[choice].name}`;
                 lookin=vertex[choice].name;
             }
+        if(choice==-1){
+            urobtn.disabled=true;
+        }else{
+            urobtn.disabled=false;
+        }
     }
     drag=false;
     //render();
-
+}
+function urobutton(){
+    //その頂点にうろつきを立たせる。
+    urotsuki.mapid=choice;
+    urobtn.disabled=true;
+}
+canvas.addEventListener("pointerdown",e=>{
+    mousedowner(e);
 });
-canvas.addEventListener("mousedown",e=>{
+function mousedowner(e){
     userAction=0;
     timer=0;
     //vertex.push({pos:cursor});
-            drag=true;
-});
+    drag=true;
+    const v=[(2*e.offsetX-canvas.width)/canvas.height,(2*e.offsetY-canvas.height)/canvas.height];
+    if(vectorlength(v)<1){
+        cursor=v.slice();
+    }
+}
 const key={};
 window.addEventListener("keydown",e=>{
     userAction=0;
