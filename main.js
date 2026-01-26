@@ -212,7 +212,7 @@ function geodesicdot(p,q){
     const pq=geo.translate(p,vectorneg(q));
     const T=vectorlength(pq);
     for(let k=0; k<d; ++k){
-        const c=geo.translate(vectormul(pq,Math.tanh(math.mod((t/6+k/d),1)*Math.atanh(T))/T),q);
+        const c=geo.translate(vectormul(pq,Math.tanh(math.mod((-t/6+k/d),1)*Math.atanh(T))/T),q);
         ctx.fillStyle=ctx.strokeStyle;
         point(c,hyperscale(c,0.008));
     }
