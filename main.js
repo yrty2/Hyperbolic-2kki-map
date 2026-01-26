@@ -1,3 +1,4 @@
+
 const projname=["ポアンカレの円盤","クラインの円盤"];//上半平面ほしい
 let projid=0;
 const urocheck=new Image();
@@ -45,6 +46,7 @@ function render(){
     ctx.textAlign="center";
     ctx.textBaseline="middle";
     for(const s of segment){
+        //0->1へ
         if(s.index[0]!=-1 && s.index[1]!=-1 && (choice!=-1 || !s.hide)){
             let draw=true;
             const p=vertex[s.index[0]].pos;
@@ -59,6 +61,16 @@ function render(){
                 if(s.attributes.indexOf("Chance")!=-1){
                     stack+="🍀";
                 }
+                if(s.attributes.indexOf("Dead End")!=-1){
+                    stack+="🔙";
+                }
+                if(s.attributes.indexOf("Unlockable")!=-1){
+                    stack+="🔑";
+                }
+                if(s.attributes.indexOf("Locked")!=-1){
+                    stack+="🔒";
+                }
+                ctx.fillStyle="#000000";
                 if(stack!=""){
                 hyperText(stack,{pos:m});
                 }
@@ -69,7 +81,7 @@ function render(){
                 mark();
                 }else{
                     let alpha=1;
-                    if(s.index[1]==choice || s.index[0]==choice){
+                    if(s.index[0]==choice || s.index[1]==choice){
                         if(s.index[1]==choice){
                             draw=false;
                         }
@@ -87,13 +99,21 @@ function render(){
                         if(s.attributes.indexOf("Dead End")!=-1){
                         ctx.strokeStyle=`rgba(137, 0, 0,${alpha})`;
                         }
+                        if(s.attributes.indexOf("Return")!=-1){
+                        ctx.strokeStyle=`rgba(137, 0, 0,${alpha})`;
+                        }
                         if(s.attributes.indexOf("Needs Effect")!=-1){
                         ctx.strokeStyle=`rgba(234, 255, 0,${alpha})`;
                         }
                         if(s.attributes.indexOf("No Entry")!=-1){
                             draw=false;
                         }
+                        if(s.attributes.indexOf("Locked")!=-1){
+                            ctx.strokeStyle=`rgba(50, 50, 50,${alpha})`;
+                        }
+                        if(draw){
                         mark();
+                        }
                     }else{
                         if(s.hide){
                             draw=false;

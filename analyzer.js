@@ -122,3 +122,15 @@ function dijkstra(p,q){
 function finder(name){
 
 }
+//for debug
+function parseAttributes(){
+    const alist=[];
+    for(const s of segment){
+        for(const a of s.attributes){
+            if(alist.indexOf(a)==-1){
+                alist.push(a);
+            }
+        }
+    }
+    return alist;
+}
