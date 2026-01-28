@@ -1,0 +1,15 @@
+[
+    ["ポアンカレの円盤","Poincare Disk"],
+    ["クラインの円盤","Beltrami-Klein Disk"],
+    ["上半平面","Upper Half Plane"],
+    ["☆めだまばくだん☆","☆Eyeball Bomb☆"],
+    ["うろつく","uro-pin"],
+    ["投影:","Projection:"],
+    ["Pで変更","Press P to change Projections"],
+    ["Rで経路リストをすべて削除","Delete path list:key R"],
+    ["Hで経路探索(最短経路)","Find shortest path:key H"],
+    ["右クリックで頂点を選択","chose vertex:Right click"],
+    ["頂点数が足りていません！","you need chose more vertex to find path!"],
+    ["結果は見つかりませんでした","no result"],
+    ["名前ソート","name sort"]
+]
