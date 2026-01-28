@@ -27,7 +27,8 @@ async function initialize(){
             }else{
             vertname=v.title;
             }
-            ifm.src="https://yume2kki.fandom.com/wiki/Yume_2kki_Wiki";
+            ifm.src="https://yume.wiki/2kki/Yume_2kki_Wiki";
+            ifm.width=0;
         }
         vertex.push({title:v.title,name:vertname,pos:randpos,neighbors:[],connect:[],image:v.locationImage,cat:[],catey:[],index:vertex.length});
     }
@@ -240,3 +241,4 @@ function userlang(){
         localized="en";
     }
 }
+
