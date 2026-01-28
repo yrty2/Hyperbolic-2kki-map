@@ -76,7 +76,7 @@ const choosen=vertex.findIndex(e=>geo.distance(projected(e.pos),cursor)<0.1);
             if(choice!=-1 && lookin!=vertex[choice].name){
                 let link="https://wikiwiki.jp/yume2kki-t/";
                 if(localized=="en"){
-                    link="https://yume2kki.fandom.com/wiki/";
+                    link="https://yume.wiki/2kki/";
                 }
                 ifm.src=`${link}${vertex[choice].name}`;
                 lookin=vertex[choice].name;
@@ -225,3 +225,4 @@ function jump(name){
     }
 }
 frame();
+
