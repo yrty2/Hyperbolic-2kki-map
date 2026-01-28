@@ -235,8 +235,8 @@ function pathfinding(){
 }
 function userlang(){
     const language=navigator.language;
+    localized="ja";
     if(language!="ja"){
         localized="en";
     }
-    localized="ja"
 }
