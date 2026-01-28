@@ -133,6 +133,9 @@ function mousedowner(e){
         cursor=v.slice();
     }
 }
+document.querySelector(".jumper").addEventListener("keydown", (e) => {
+  e.stopPropagation();  // 親の keydown を発火させない
+});
 const key={};
 window.addEventListener("keydown",e=>{
     userAction=0;
