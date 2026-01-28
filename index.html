@@ -27,6 +27,12 @@
             left:30px;
             top:240px;
         }
+        .jumper{
+            position:absolute;
+            left:30px;
+            top:360px;
+            width:100px;
+        }
     </style>
     <body>
         <iframe
@@ -36,14 +42,13 @@
   height="0">
 </iframe>
         <input type="button" onclick="urobutton()" value="うろつく" class="urobtn" disabled />
+        <t><input type="text" onchange="jump(this.value)" value="" class="jumper" placeholder="名前ソート" /></t>
         <maigo class="maigo"></maigo>
         <canvas class="canvas"></canvas>
         <script type="text/javascript" src="mathematics.js"></script>
         <script type="text/javascript" src="geometry.js"></script>
-        <script type="text/javascript" src="main.js"></script>
-        <script type="text/javascript" src="analyzer.js"></script>
-        <script type="text/javascript" src="control.js"></script>
+        <script type="text/javascript" src="src/main.js"></script>
+        <script type="text/javascript" src="src/analyzer.js"></script>
+        <script type="text/javascript" src="src/control.js"></script>
     </body>
-
-
 </html>
