@@ -218,8 +218,8 @@ const projection={
     },
     upperhalf(hyp){
         //上半平面
-        const z=c32.const(hyp[1],-hyp[0]);   
-        return c32.sub(c32.mul(c32.quot(c32.sum(c32.one,z),c32.sub(c32.one,z)),c32.i),c32.i);
+        const z=[hyp[1],-hyp[0]];   
+        return c128.sum(c128.mul(c128.quot(c128.sum([1,0],z),c128.sub([1,0],z)),[0,-1]),[0,1]);
     },
     disk(hyp,f){
         //0でクライン、1でポアンカレ
@@ -338,7 +338,7 @@ const c128={
         return [z[0]+w[0],z[1]+w[1]];
     },
     sub(z,w){
-        return [z[0]+w[0],z[1]+w[1]];
+        return [z[0]-w[0],z[1]-w[1]];
     },
     abs(z){
         return Math.sqrt(z[0]*z[0]+z[1]*z[1]);
